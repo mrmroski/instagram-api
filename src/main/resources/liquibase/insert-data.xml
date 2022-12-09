@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="patryk" id="20221209_patryk_003">
+
+        <insert tableName="users">
+            <column name="id" value="1"/>
+            <column name="username" value="Tommy"/>
+            <column name="created_at" value="2022-12-12"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="2"/>
+            <column name="username" value="Alex"/>
+            <column name="created_at" value="2022-02-08"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="3"/>
+            <column name="username" value="Adam"/>
+            <column name="created_at" value="2021-08-18"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="4"/>
+            <column name="username" value="Anna"/>
+            <column name="created_at" value="2021-08-11"/>
+        </insert>
+
+        <insert tableName="posts">
+            <column name="id" value="1"/>
+            <column name="url" value="http://funny.pic"/>
+            <column name="created_at" value="2022-02-10"/>
+            <column name="user_id" value="1"/>
+        </insert>
+
+        <insert tableName="posts">
+            <column name="id" value="2"/>
+            <column name="url" value="http://sad.pic"/>
+            <column name="created_at" value="2022-02-10"/>
+            <column name="user_id" value="1"/>
+        </insert>
+
+        <insert tableName="posts">
+            <column name="id" value="3"/>
+            <column name="url" value="http://stupid.pic"/>
+            <column name="created_at" value="2022-02-10"/>
+            <column name="user_id" value="2"/>
+        </insert>
+
+        <insert tableName="posts">
+            <column name="id" value="4"/>
+            <column name="url" value="http://funny2.pic"/>
+            <column name="created_at" value="2022-02-10"/>
+            <column name="user_id" value="3"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="1"/>
+            <column name="content" value="U DUMB"/>
+            <column name="created_at" value="2022-02-10"/>
+            <column name="edited_at" value="2022-02-11"/>
+            <column name="user_id" value="1"/>
+            <column name="post_id" value="1"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="2"/>
+            <column name="content" value="soooo ncie"/>
+            <column name="created_at" value="2022-02-08"/>
+            <column name="user_id" value="2"/>
+            <column name="post_id" value="3"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="3"/>
+            <column name="content" value="lovely pic"/>
+            <column name="created_at" value="2022-02-10"/>
+            <column name="user_id" value="3"/>
+            <column name="post_id" value="2"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="4"/>
+            <column name="content" value="where are you???"/>
+            <column name="created_at" value="2022-02-19"/>
+            <column name="edited_at" value="2022-02-20"/>
+            <column name="user_id" value="3"/>
+            <column name="post_id" value="1"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="5"/>
+            <column name="content" value="free trump"/>
+            <column name="created_at" value="2022-03-10"/>
+            <column name="edited_at" value="2022-04-11"/>
+            <column name="user_id" value="3"/>
+            <column name="post_id" value="3"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="6"/>
+            <column name="content" value="lol xd"/>
+            <column name="created_at" value="2022-02-10"/>
+            <column name="edited_at" value="2022-02-11"/>
+            <column name="user_id" value="3"/>
+            <column name="post_id" value="1"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

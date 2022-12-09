@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserDto {
 
+    public int id;
     public String username;
     public LocalDate createdAt;
 }

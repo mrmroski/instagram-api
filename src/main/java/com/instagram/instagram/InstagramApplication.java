@@ -22,4 +22,7 @@ public class InstagramApplication {
 		SpringApplication.run(InstagramApplication.class, args);
 	}
 
+	//TODO: user_simple_view not counting properly
+	//TODO: Replace DTOs with SimpleView (maybe?)
+
 }

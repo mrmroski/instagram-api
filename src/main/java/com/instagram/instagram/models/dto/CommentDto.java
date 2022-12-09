@@ -13,8 +13,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CommentDto {
 
+    public int id;
     public String content;
     public int userId;
     public int postId;
     public LocalDate createdAt;
+    public LocalDate editedAt;
 }

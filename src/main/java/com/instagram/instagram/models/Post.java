@@ -20,51 +20,25 @@ import static javax.persistence.GenerationType.SEQUENCE;
 public class Post {
 
     @Id
-    @SequenceGenerator(
-            name = "post_sequence",
-            sequenceName = "post_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "post_sequence"
-    )
-    @Column(
-            name = "id",
-            updatable = false
-    )
+//    @SequenceGenerator(name = "post_sequence", sequenceName = "post_sequence", allocationSize = 1)
+//    @GeneratedValue(strategy = SEQUENCE, generator = "post_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private int Id;
 
-    @Column(
-            name = "created_at",
-            updatable = false
-    )
+    @Column(name = "created_at", updatable = false)
     private LocalDate createdAt;
 
-    @Column(
-            name = "url",
-            nullable = false,
-            updatable = false
-    )
+    @Column(name = "url", nullable = false, updatable = false)
     private String url;
 
     @ManyToOne
-    @JoinColumn(
-            name = "user_id",
-            nullable = false,
-            referencedColumnName = "id", //Refers to 'int id' in User class
-            foreignKey = @ForeignKey(
-                    name = "user_post_fk"
-            )
-    )
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "user_post_fk") )
     private User user;
 
-    @OneToMany(
-            mappedBy = "post",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
-    )
+    @OneToMany(mappedBy = "post", orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     public Post(LocalDate createdAt, String url) {

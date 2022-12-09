@@ -6,6 +6,8 @@ import com.instagram.instagram.models.dto.UserDto;
 import com.instagram.instagram.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,17 +36,15 @@ public class UserController {
         return new ResponseEntity(modelMapper.map((userService.findUserById(id)), UserDto.class), HttpStatus.OK);
     }
 
-    @GetMapping("/findUser/{username}") //TODO: check if there is better way for that
-    public ResponseEntity<UserDto> findUserByUsername(@PathVariable("username") String username){
-        return new ResponseEntity<>(modelMapper.map((userService.findUserByUsername(username)), UserDto.class), HttpStatus.OK);
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteUSer(@PathVariable("id") int id){
+        userService.deleteUserById(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> findAllUsers() {
-        return new ResponseEntity(userService.findAllUsers()
-                .stream()
-                .map(user -> modelMapper.map(user, UserDto.class))
-                .collect(Collectors.toList()), HttpStatus.OK);
+    public ResponseEntity findAllUsers(@PageableDefault Pageable pageable) {
+        return new ResponseEntity(userService.findAllUsers(pageable), HttpStatus.OK);
     }
 
 

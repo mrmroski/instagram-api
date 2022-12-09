@@ -15,57 +15,30 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "User")
-@Table(
-        name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "username_unique", columnNames = "username")
-        }
-)
+@Table(name = "users")
+//, uniqueConstraints = {@UniqueConstraint(name = "username_unique", columnNames = "username")})
+@Builder
 public class User {
 
     @Id
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "user_sequence"
-    )
-    @Column(
-            name = "id",
-            updatable = false
-    )
+//    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
+//    @GeneratedValue(strategy = SEQUENCE, generator = "user_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private int Id;
 
-    @Column(
-            name = "username",
-            nullable = false,
-            updatable = false
-    )
+    @Column(name = "username", nullable = false, updatable = false)
     private String username;
 
-    @Column(
-            name = "created_at",
-            updatable = false
-    )
+    @Column(name = "created_at", updatable = false)
     private LocalDate createdAt;
 
-    @OneToMany(
-            mappedBy = "user", //Refers to 'private User user' in Post class
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
-    )
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "user",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
-    )
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     public User(LocalDate createdAt, String username){

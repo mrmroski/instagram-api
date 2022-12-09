@@ -10,6 +10,7 @@ import com.instagram.instagram.repo.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,17 +23,20 @@ public class CommentService {
 
     public Comment createComment(Comment comment) {
         if(!postRepository.existsById(comment.getPost().getId())) {
-            throw new ResourceNotFoundException(String.format("Post with id %s not found! Cannot add the post", comment.getPost().getId()));
+            throw new ResourceNotFoundException(String
+                    .format("Post with id %s not found! Cannot add the post", comment.getPost().getId()));
         }
         if(!userRepository.existsById(comment.getUser().getId())) {
-            throw new ResourceNotFoundException(String.format("User with id %s not found! Cannot add the post", comment.getUser().getId()));
+            throw new ResourceNotFoundException(String
+                    .format("User with id %s not found! Cannot add the post", comment.getUser().getId()));
         }
         return commentRepository.save(comment);
     }
 
     public Comment findComment(int id) {
         return commentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Comment with id %s not found!", id)));
+                .orElseThrow(()
+                        -> new ResourceNotFoundException(String.format("Comment with id %s not found!", id)));
     }
 
     public List<Comment> findAllComments() {
@@ -43,16 +47,19 @@ public class CommentService {
         if (commentRepository.existsById(id)) {
             commentRepository.deleteById(id);
         } else {
-            throw new ResourceNotFoundException(String.format("Comment with id %s not found!", id));
+            throw new ResourceNotFoundException(String
+                    .format("Comment with id %s not found!", id));
         }
     }
 
-    public Comment editComment(int id, EditCommentCommand command) {
-        return commentRepository.findById(id)
+    public Comment editComment(EditCommentCommand command) {
+        return commentRepository.findById(command.getPostId())
                 .map(commentToEdit -> {
                     commentToEdit.setContent(command.getContent());
+                    commentToEdit.setEditedAt(LocalDate.now());
                     return commentToEdit;
-                }).orElseThrow(() -> new ResourceNotFoundException(String.format("Comment with id %s not found!", id)));
+                }).orElseThrow(()
+                        -> new ResourceNotFoundException(String.format("Comment with id %s not found!", command.getPostId())));
 
     }
 

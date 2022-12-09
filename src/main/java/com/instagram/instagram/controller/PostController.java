@@ -6,6 +6,8 @@ import com.instagram.instagram.models.dto.PostDto;
 import com.instagram.instagram.service.PostService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,7 @@ public class PostController {
         Post postToAdd = modelMapper.map(command, Post.class);
         Post createdPost = postService.createPost(postToAdd);
         return new ResponseEntity(modelMapper
-                .map(createdPost, PostDto.class), HttpStatus.OK);
+                .map(createdPost, PostDto.class), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -37,15 +39,13 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostDto>> findAllPosts(){
-        return new ResponseEntity(postService.findAllPosts()
-                .stream()
-                .map(post -> modelMapper.map(post, PostDto.class))
-                .collect(Collectors.toList()), HttpStatus.OK);
+    public ResponseEntity findAllPosts(@PageableDefault Pageable pageable){
+        return new ResponseEntity(postService.findAllPosts(pageable), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePost (@PathVariable("id") int id){
+    public ResponseEntity deletePost (@PathVariable("id") int id){
         postService.deletePostById(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

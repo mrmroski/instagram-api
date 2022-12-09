@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PostDto {
 
+    public int id;
     public String url;
     public LocalDate createdAt;
     public int userId;

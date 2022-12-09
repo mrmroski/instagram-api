@@ -25,6 +25,4 @@ public class CreateCommentCommand {
         this.userId = userId;
         this.postId = postId;
     }
-
-    //TODO Add @Valid to validation
 }

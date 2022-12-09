@@ -44,13 +44,14 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable("id") int id){
+    public ResponseEntity deleteComment(@PathVariable("id") int id){
         commentService.deleteCommentById(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<CommentDto> editCommentPartially(@PathVariable("id") int id, @RequestBody EditCommentCommand command){
-        Comment editedComment = commentService.editComment(id, command);
+        Comment editedComment = commentService.editComment(command);
         return new ResponseEntity(modelMapper.map(editedComment, CommentDto.class), HttpStatus.OK);
     }
 
