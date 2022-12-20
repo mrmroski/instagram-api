@@ -13,11 +13,11 @@ import javax.validation.constraints.NotEmpty;
 public class EditCommentCommand {
     @NotEmpty(message = "CONTENT_NOT_EMPTY")
     private String content;
-    private int postId;
+    private int commentId;
 
     @JsonCreator
-    public EditCommentCommand(String content, int postId) {
+    public EditCommentCommand(String content, int commentId) {
         this.content = content;
-        this.postId = postId;
+        this.commentId = commentId;
     }
 }

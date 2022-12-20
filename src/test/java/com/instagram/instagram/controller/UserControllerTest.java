@@ -37,7 +37,7 @@ class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @AfterEach
+    @BeforeEach
     void clean(){
         userRepository.deleteAll();
     }
@@ -124,7 +124,7 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        User result = objectMapper.readValue(responseJson, User.class);
+        User resultUse1 = objectMapper.readValue(responseJson, User.class);
 
         //... creating User #2
         CreateUserCommand createUserCommand2 = new CreateUserCommand("Alex");
@@ -144,12 +144,12 @@ class UserControllerTest {
 
         postman.perform(get("/api/v1/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id").value(result.getId()))
-                .andExpect(jsonPath("$.[0].username").value("TommyLee"))
-                .andExpect(jsonPath("$.[0].createdAt").value(LocalDate.now().toString()))
-                .andExpect(jsonPath("$.[1].id").value(result2.getId()))
-                .andExpect(jsonPath("$.[1].username").value("Alex"))
-                .andExpect(jsonPath("$.[1].createdAt").value(LocalDate.now().toString()));
+                .andExpect(jsonPath("$.content.[0].id").value(resultUse1.getId()))
+                .andExpect(jsonPath("$.content.[0].username").value("TommyLee"))
+                .andExpect(jsonPath("$.content.[0].createdAt").value(LocalDate.now().toString()))
+                .andExpect(jsonPath("$.content.[1].id").value(result2.getId()))
+                .andExpect(jsonPath("$.content.[1].username").value("Alex"))
+                .andExpect(jsonPath("$.content.[1].createdAt").value(LocalDate.now().toString()));
 
 
     }

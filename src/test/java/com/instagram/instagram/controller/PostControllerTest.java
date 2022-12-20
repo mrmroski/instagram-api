@@ -47,11 +47,24 @@ class PostControllerTest {
     @Test
     void itShouldGetPost() throws Exception {
         //...creating User
-        User user = new User(1, "Alex", LocalDate.now(), null, null);
-        userRepository.save(user);
+        CreateUserCommand createUserCommand1 = new CreateUserCommand("Tommy");
+        String requestJsonUser1 = objectMapper.writeValueAsString(createUserCommand1);
+
+        String responseJsonUser1 = postman.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonUser1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value("Tommy"))
+                .andExpect(jsonPath("$.createdAt").value(LocalDate.now().toString()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        User resultUser1 = objectMapper.readValue(responseJsonUser1, User.class);
 
         //... creating Post
-        CreatePostCommand createPostCommand = new CreatePostCommand("http://funny.pic", user.getId());
+        CreatePostCommand createPostCommand = new CreatePostCommand("http://funny.pic", resultUser1.getId());
         String requestJsonPost = objectMapper.writeValueAsString(createPostCommand);
 
         String responseJsonPost = postman.perform(post("/api/v1/posts")
@@ -60,7 +73,7 @@ class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.url").value("http://funny.pic"))
-                .andExpect(jsonPath("$.userId").value(user.getId()))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -71,26 +84,52 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(resultPost.getId()))
                 .andExpect(jsonPath("$.url").value("http://funny.pic"))
-                .andExpect(jsonPath("$.userId").value(user.getId()));
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()));
 
 
         Post saved = postRepository.findById(resultPost.getId()).get();
         Assertions.assertEquals("http://funny.pic", saved.getUrl());
-        Assertions.assertEquals(user.getId(), saved.getUser().getId());
+        Assertions.assertEquals(resultUser1.getId(), saved.getUser().getId());
     }
 
     @Test
     void itShouldReturnAllPosts() throws Exception {
         //... creating User #1
-        User user1 = new User(1, "Alex", LocalDate.now(), null, null);
-        userRepository.save(user1);
+        CreateUserCommand createUserCommand1 = new CreateUserCommand("Tommy");
+        String requestJsonUser1 = objectMapper.writeValueAsString(createUserCommand1);
+
+        String responseJsonUser1 = postman.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonUser1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value("Tommy"))
+                .andExpect(jsonPath("$.createdAt").value(LocalDate.now().toString()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        User resultUser1 = objectMapper.readValue(responseJsonUser1, User.class);
 
         //... creating User #2
-        User user2 = new User(2, "Tommy", LocalDate.now().minusWeeks(78), null, null);
-        userRepository.save(user2);
+        CreateUserCommand createUserCommand2 = new CreateUserCommand("Tommy");
+        String requestJsonUser2 = objectMapper.writeValueAsString(createUserCommand2);
+
+        String responseJsonUser2 = postman.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonUser1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value("Tommy"))
+                .andExpect(jsonPath("$.createdAt").value(LocalDate.now().toString()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        User resultUser2 = objectMapper.readValue(responseJsonUser1, User.class);
 
         //... creating Post #1
-        CreatePostCommand createPostCommand1 = new CreatePostCommand("http://funny.pic", user1.getId());
+        CreatePostCommand createPostCommand1 = new CreatePostCommand("http://funny.pic", resultUser1.getId());
         String requestJsonPost1 = objectMapper.writeValueAsString(createPostCommand1);
 
         String responseJsonPost1 = postman.perform(post("/api/v1/posts")
@@ -99,7 +138,7 @@ class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.url").value("http://funny.pic"))
-                .andExpect(jsonPath("$.userId").value(user1.getId()))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -109,7 +148,7 @@ class PostControllerTest {
 
 
         //... creating Post #2
-        CreatePostCommand createPostCommand2 = new CreatePostCommand("http://sad.pic", user2.getId());
+        CreatePostCommand createPostCommand2 = new CreatePostCommand("http://sad.pic", resultUser2.getId());
         String requestJsonPost2 = objectMapper.writeValueAsString(createPostCommand2);
 
         String responseJsonPost2 = postman.perform(post("/api/v1/posts")
@@ -118,7 +157,7 @@ class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.url").value("http://sad.pic"))
-                .andExpect(jsonPath("$.userId").value(user2.getId()))
+                .andExpect(jsonPath("$.userId").value(resultUser2.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -128,23 +167,36 @@ class PostControllerTest {
         //... getting all Posts
         postman.perform(get("/api/v1/posts"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id").value(resultPost1.getId()))
-                .andExpect(jsonPath("$.[0].url").value("http://funny.pic"))
-                .andExpect(jsonPath("$.[0].userId").value(user1.getId()))
-                .andExpect(jsonPath("$.[1].id").value(resultPost2.getId()))
-                .andExpect(jsonPath("$.[1].url").value("http://sad.pic"))
-                .andExpect(jsonPath("$.[1].userId").value(user2.getId()));
+                .andExpect(jsonPath("$.content.[0].id").value(resultPost1.getId()))
+                .andExpect(jsonPath("$.content.[0].url").value("http://funny.pic"))
+                .andExpect(jsonPath("$.content.[0].userId").value(resultUser1.getId()))
+                .andExpect(jsonPath("$.content.[1].id").value(resultPost2.getId()))
+                .andExpect(jsonPath("$.content.[1].url").value("http://sad.pic"))
+                .andExpect(jsonPath("$.content.[1].userId").value(resultUser2.getId()));
 
     }
 
     @Test
     void itShouldDeletePost() throws Exception {
         //... creating User
-        User user1 = new User(1, "Alex", LocalDate.now(), null, null);
-        userRepository.save(user1);
+        CreateUserCommand createUserCommand = new CreateUserCommand("Tommy");
+        String requestJson = objectMapper.writeValueAsString(createUserCommand);
+
+        String responseJson = postman.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value("Tommy"))
+                .andExpect(jsonPath("$.createdAt").value(LocalDate.now().toString()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        User resultUser = objectMapper.readValue(responseJson, User.class);
 
         //... creating Post
-        CreatePostCommand createPostCommand = new CreatePostCommand("http://funny.pic", user1.getId());
+        CreatePostCommand createPostCommand = new CreatePostCommand("http://funny.pic", resultUser.getId());
         String requestJsonPost = objectMapper.writeValueAsString(createPostCommand);
 
         String responseJsonPost = postman.perform(post("/api/v1/posts")
@@ -153,7 +205,7 @@ class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.url").value("http://funny.pic"))
-                .andExpect(jsonPath("$.userId").value(user1.getId()))
+                .andExpect(jsonPath("$.userId").value(resultUser.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();

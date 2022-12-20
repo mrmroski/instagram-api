@@ -2,7 +2,6 @@ package com.instagram.instagram.service;
 
 import com.instagram.instagram.exception.ResourceNotFoundException;
 import com.instagram.instagram.models.Comment;
-import com.instagram.instagram.models.User;
 import com.instagram.instagram.models.command.EditCommentCommand;
 import com.instagram.instagram.repo.CommentRepository;
 import com.instagram.instagram.repo.PostRepository;
@@ -53,13 +52,14 @@ public class CommentService {
     }
 
     public Comment editComment(EditCommentCommand command) {
-        return commentRepository.findById(command.getPostId())
+        Comment comment = commentRepository.findById(command.getCommentId())
                 .map(commentToEdit -> {
                     commentToEdit.setContent(command.getContent());
                     commentToEdit.setEditedAt(LocalDate.now());
                     return commentToEdit;
                 }).orElseThrow(()
-                        -> new ResourceNotFoundException(String.format("Comment with id %s not found!", command.getPostId())));
+                        -> new ResourceNotFoundException(String.format("Comment with id %s not found!", command.getCommentId())));
+        return commentRepository.saveAndFlush(comment);
 
     }
 

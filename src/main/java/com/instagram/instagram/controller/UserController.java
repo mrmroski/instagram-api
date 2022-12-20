@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findUser(@PathVariable("id") int id) {
+    public ResponseEntity findUser(@PathVariable("id") int id) {
         return new ResponseEntity(modelMapper.map((userService.findUserById(id)), UserDto.class), HttpStatus.OK);
     }
 

@@ -56,24 +56,49 @@ class CommentControllerTest {
 
     @BeforeEach
     void clean() {
-        commentRepository.deleteAll();
         userRepository.deleteAll();
         postRepository.deleteAll();
+        commentRepository.deleteAll();
     }
 
     @Test
     void itShouldDeleteComment() throws Exception {
         //...creating User
-        User user = new User(1, "Alex", LocalDate.now(), null, null);
-        userRepository.save(user);
+        CreateUserCommand createUserCommand = new CreateUserCommand("TommyLee");
+        String requestJson = objectMapper.writeValueAsString(createUserCommand);
+
+        String responseJson = postman.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value("TommyLee"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        User resultUser1 = objectMapper.readValue(responseJson, User.class);
 
         //...creating Post
-        Post post = new Post(1, LocalDate.now(), "http://funny.pic", user, null);
-        postRepository.save(post);
+        CreatePostCommand createPostCommand1 = new CreatePostCommand("http://funny.pic", resultUser1.getId());
+        String requestJsonPost1 = objectMapper.writeValueAsString(createPostCommand1);
+
+        String responseJsonPost1 = postman.perform(post("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonPost1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.url").value("http://funny.pic"))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Post resultPost1 = objectMapper.readValue(responseJsonPost1, Post.class);
 
         //...creating Comment
         CreateCommentCommand createCommentCommand = new CreateCommentCommand(
-                "LOL U DUMB", user.getId(), post.getId());
+                "LOL U DUMB", resultUser1.getId(), resultPost1.getId());
         String requestJsonComment = objectMapper.writeValueAsString(createCommentCommand);
 
         String responseJsonComment = postman.perform(post("/api/v1/comments")
@@ -81,8 +106,8 @@ class CommentControllerTest {
                         .content(requestJsonComment))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("LOL U DUMB"))
-                .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.postId").value(post.getId()))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andExpect(jsonPath("$.postId").value(resultPost1.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -98,16 +123,41 @@ class CommentControllerTest {
     @Test
     void itShouldGetComment() throws Exception {
         //...creating User
-        User user = new User(1, "Alex", LocalDate.now(), null, null);
-        userRepository.save(user);
+        CreateUserCommand createUserCommand = new CreateUserCommand("TommyLee");
+        String requestJson = objectMapper.writeValueAsString(createUserCommand);
+
+        String responseJson = postman.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value("TommyLee"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        User resultUser1 = objectMapper.readValue(responseJson, User.class);
 
         //...creating Post
-        Post post = new Post(1, LocalDate.now(), "http://funny.pic", user, null);
-        postRepository.save(post);
+        CreatePostCommand createPostCommand1 = new CreatePostCommand("http://funny.pic", resultUser1.getId());
+        String requestJsonPost1 = objectMapper.writeValueAsString(createPostCommand1);
+
+        String responseJsonPost1 = postman.perform(post("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonPost1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.url").value("http://funny.pic"))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Post resultPost1 = objectMapper.readValue(responseJsonPost1, Post.class);
 
         //...creating Comment
         CreateCommentCommand createCommentCommand = new CreateCommentCommand(
-                "LOL U DUMB", user.getId(), post.getId());
+                "LOL U DUMB", resultUser1.getId(), resultPost1.getId());
         String requestJsonComment = objectMapper.writeValueAsString(createCommentCommand);
 
         String responseJsonComment = postman.perform(post("/api/v1/comments")
@@ -115,8 +165,8 @@ class CommentControllerTest {
                         .content(requestJsonComment))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("LOL U DUMB"))
-                .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.postId").value(post.getId()))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andExpect(jsonPath("$.postId").value(resultPost1.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -126,24 +176,49 @@ class CommentControllerTest {
         postman.perform(get("/api/v1/comments/" + resultComment.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("LOL U DUMB"))
-                .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.postId").value(post.getId()));
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andExpect(jsonPath("$.postId").value(resultPost1.getId()));
 
     }
 
     @Test
     void itShouldEditComment() throws Exception {
-        //...creating User
-        User user = new User(1, "Alex", LocalDate.now(), null, null);
-        userRepository.save(user);
+        //... creating User
+        CreateUserCommand createUserCommand = new CreateUserCommand("TommyLee");
+        String requestJson = objectMapper.writeValueAsString(createUserCommand);
+
+        String responseJson = postman.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value("TommyLee"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        User resultUser1 = objectMapper.readValue(responseJson, User.class);
 
         //...creating Post
-        Post post = new Post(1, LocalDate.now(), "http://funny.pic", user, null);
-        postRepository.save(post);
+        CreatePostCommand createPostCommand1 = new CreatePostCommand("http://funny.pic", resultUser1.getId());
+        String requestJsonPost1 = objectMapper.writeValueAsString(createPostCommand1);
+
+        String responseJsonPost1 = postman.perform(post("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonPost1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.url").value("http://funny.pic"))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Post resultPost1 = objectMapper.readValue(responseJsonPost1, Post.class);
 
         //...creating Comment
         CreateCommentCommand createCommentCommand = new CreateCommentCommand(
-                "LOL U DUMB", user.getId(), post.getId());
+                "LOL U DUMB", resultUser1.getId(), resultPost1.getId());
         String requestJsonComment = objectMapper.writeValueAsString(createCommentCommand);
 
         String responseJsonComment = postman.perform(post("/api/v1/comments")
@@ -151,8 +226,8 @@ class CommentControllerTest {
                         .content(requestJsonComment))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("LOL U DUMB"))
-                .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.postId").value(post.getId()))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andExpect(jsonPath("$.postId").value(resultPost1.getId()))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -160,7 +235,7 @@ class CommentControllerTest {
         Comment resultComment = objectMapper.readValue(responseJsonComment, Comment.class);
 
         //...creating EditCommentCommand
-        EditCommentCommand editCommentCommand = new EditCommentCommand("SRY SNOWFLOKAE", resultComment.getId());
+        EditCommentCommand editCommentCommand = new EditCommentCommand("SRY SNOWFLOKAE!!!!", resultComment.getId());
         String requestJsonEdit = objectMapper.writeValueAsString(editCommentCommand);
 
         postman.perform(patch("/api/v1/comments/" + resultComment.getId())
@@ -170,9 +245,9 @@ class CommentControllerTest {
 
         postman.perform(get("/api/v1/comments/" + resultComment.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("SRY SNOWFLOKAE"))
-                .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.postId").value(post.getId()))
+                .andExpect(jsonPath("$.content").value("SRY SNOWFLOKAE!!!!"))
+                .andExpect(jsonPath("$.userId").value(resultUser1.getId()))
+                .andExpect(jsonPath("$.postId").value(resultPost1.getId()))
                 .andExpect(jsonPath("$.editedAt").value(LocalDate.now()));
         //TODO NOT WORKING
 
